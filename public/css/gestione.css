@@ -1,0 +1,8 @@
+* { margin: 0; padding: 0; }
+
+body { font-family: sans-serif; font-size: 15px; }
+
+form { padding: 20px; }
+form > div { margin-top: 10px; }
+
+#caricamento { color: red; font-size: 20px; font-weight: bold }
