@@ -26,10 +26,14 @@ router.post('/check', function (req_server, res_server, next_server) {
             , rfid: req_server.body.badge
             , timestamp: parseInt('' + (req_server.body.ora / 1000))
         }
+        ,headers: {
+            'User-Agent': 'RILEVATORE-2019-02-13'
+        }
     }, (err, res, body) => {
 
         if (err) {
             res_server.send(risposta)
+            last_check = null
 
         } else {
 
