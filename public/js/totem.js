@@ -18,6 +18,17 @@ window.addEventListener('load', function () {
     var badge = document.getElementById('badge')
     var ultimi = document.getElementById('ultimi')
 
+    var msInizio = document.getElementById('msInizio')
+    var msFine = document.getElementById('msFine')
+    var oraInizio = document.getElementById('oraInizio')
+    var oraFine = document.getElementById('oraFine')
+    var durata = document.getElementById('durata')
+    var lineaIndicatore = document.getElementById('lineaIndicatore')
+    var pallinoFine = document.getElementById('pallinoFine')
+    var timeline = document.getElementById('timeline')
+
+    var inizioConteggio = null
+
     window.addEventListener('keypress', function (e) {
 
         if (e.key !== 'Enter')
@@ -43,7 +54,9 @@ window.addEventListener('load', function () {
             to = null
         }
 
-        nome.innerText = ''
+        inizioConteggio = null
+
+        ripristinaInterfaccia()
         badge.innerText = codice
         result.innerHTML = '<span class="wait">ATTENDI</span>'
 
@@ -137,11 +150,32 @@ window.addEventListener('load', function () {
                 nome.innerText = json.nome
                 badge.innerText = json.badge
 
-                if (json.stato === 0)
+                if (json.stato === 0) {
                     result.innerHTML = '<span class="failed">ERRORE</span>'
 
-                else
+                } else {
                     result.innerHTML = '<span class="ok">OK</span>'
+
+                    timeline.style.display = 'block'
+                    msInizio.innerText = json.inizio.makerspace
+                    oraInizio.innerText = (new Date(json.inizio.orario * 1000)).toLocaleString()
+
+                    if (json.fine !== null) {
+                        msFine.innerText = json.fine.makerspace
+                        oraFine.innerText = (new Date(json.fine.orario * 1000)).toLocaleString()
+
+                        lineaIndicatore.classList.remove('in-progress')
+                        pallinoFine.classList.remove('in-progress')
+                    }
+
+                    inizioConteggio = null
+
+                    if (json.durata !== null)
+                        durata.innerText = json.durata
+
+                    else
+                        inizioConteggio = Date.now()
+                }
 
                 callback()
             } else if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -152,16 +186,35 @@ window.addEventListener('load', function () {
         }
     }
 
+    function conteggio () {
+        if (inizioConteggio !== null)
+            durata.innerText = Math.floor((Date.now() - inizioConteggio) / 1000) + 's'
+    }
+
     function ripristinaInterfaccia () {
 
         to = null
+        inizioConteggio = null
 
-        if(avvio)
+        if (avvio)
             return
 
         nome.innerText = ''
         badge.innerText = ''
         result.innerHTML = '<span class="ok">AVVICINA IL BADGE AL LETTORE</span>'
+
+        timeline.style.display = 'none'
+        oraInizio.innerText = ''
+        oraFine.innerText = ''
+        msInizio.innerText = ''
+        msFine.innerText = ''
+        durata.innerText = ''
+
+        if (!pallinoFine.classList.contains('in-progress'))
+            pallinoFine.classList.add('in-progress')
+
+        if (!lineaIndicatore.classList.contains('in-progress'))
+            lineaIndicatore.classList.add('in-progress')
     }
 
     function avvioTotem () {
@@ -184,7 +237,7 @@ window.addEventListener('load', function () {
                     badge.innerText = ''
                     result.innerHTML = '<span class="wait">TOTEM DISABILITATO</span>'
 
-                } else if(avvio) {
+                } else if (avvio) {
                     avvio = false
                     ripristinaInterfaccia()
                 }
@@ -204,5 +257,6 @@ window.addEventListener('load', function () {
     }
 
     avvioTotem()
-    setInterval(avvioTotem, 5000)
+    setInterval(avvioTotem, 2000)
+    setInterval(conteggio, 500)
 })

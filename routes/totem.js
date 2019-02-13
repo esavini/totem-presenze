@@ -15,7 +15,7 @@ router.post('/check', function (req_server, res_server, next_server) {
 
     var totem = JSON.parse(fs.readFileSync(__dirname + '/../config.json'))
 
-    if(totem.enabled !== true) {
+    if (totem.enabled !== true) {
         res_server.send(risposta)
         return
     }
@@ -40,30 +40,28 @@ router.post('/check', function (req_server, res_server, next_server) {
 
                 res_server.send(risposta)
 
-
             } else if (res.statusCode === 200) {
                 // In caso di successo con body
                 try {
 
                     body = JSON.parse(body)
 
-                    if (body.errore !== undefined)
+                    if (body.errore) {
                         res_server.send(risposta)
-
-                    else {
-
-                        if (body.nome !== undefined)
-                            risposta.nome = body.nome
-
-                        risposta.stato = 1
-
-                        res_server.send(risposta)
+                        return
                     }
+
+                    body.stato = 1
+                    body.badge = risposta.badge,
+                        body.ora = risposta.ora
+                    res_server.send(body)
+
                 } catch (e) {
                     res_server.send(risposta)
                 }
 
             } else {
+
                 // In tutti gli altri casi errore
                 res_server.send(risposta)
             }
@@ -71,6 +69,8 @@ router.post('/check', function (req_server, res_server, next_server) {
     })
 
 })
+
+var last_check = null
 
 router.get('/config', function (req_server, res_server, next_server) {
 
@@ -81,7 +81,30 @@ router.get('/config', function (req_server, res_server, next_server) {
     response.enabled = totem.enabled
     response.marquee = totem.marquee
 
-    res_server.send(response)
+    if(last_check === null || (Date.now() - last_check) > 1000 * 60 * 5) {
+        request.post('http://clients1.google.com/generate_204', {
+        }, (err, res, body) => {
+
+            if (err) {
+                response.enabled = false
+                response.marquee = 'Impossibile connettersi ad internet!'
+                res_server.send(response)
+
+            } else {
+
+                if (res.statusCode === 204) {
+                    res_server.send(response)
+                    last_check = Date.now()
+
+                } else {
+                    response.enabled = false
+                    response.marquee = 'Impossibile connettersi ad internet!'
+                    res_server.send(response)
+                }
+            }
+        })
+    } else
+        res_server.send(response)
 
 })
 

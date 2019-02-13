@@ -8,10 +8,8 @@ body {
 }
 
 #container {
-    background: url('/images/bg.png') #fff;
+    background: #fff;
     background-size: auto 100%;
-    background-repeat: no-repeat;
-    background-position: left top;
     height: 100vh;
     width: 100vw;
 }
@@ -40,12 +38,97 @@ aside {
     padding: 20px;
     margin-right: 20px;
     border-radius: 5px;
+    overflow-y: hidden;
 }
 
 header {
     width: 75vw;
     text-align: center;
     padding-top: 20vh
+}
+
+header > div > div {
+    margin: 0 auto;
+}
+
+header > #timeline * {
+    vertical-align: middle;
+}
+
+#timeline {
+    width: 25vw;
+    margin: 25px auto 0 auto;
+    display: none;
+}
+
+#timeline > div {
+    width: 100%;
+}
+
+#timeline > div > div:last-child {
+    padding-left: 15px;
+    width: 100%;
+}
+
+#timeline > div > div:last-child p {
+    text-align: left !important;
+    width: 100%;
+}
+
+#timeline > div:nth-child(2) > div:last-child {
+    text-align: left;
+    width: 100%;
+    padding-left: 40px;
+}
+
+#timeline > div > div p:first-child {
+    font-weight: bold;
+}
+
+#timeline .dot {
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    background: rgb(142, 238, 234);
+}
+
+#timeline .dot.in-progress {
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    background: #ddd;
+}
+
+#timeline .dot.in-progress::after {
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    background: rgb(142, 238, 234);
+    z-index: 111;
+    content: '';
+    margin-left: calc(-55px / 2);
+    position: absolute;
+    animation: incorso 1s infinite ease-in-out;
+}
+
+@keyframes incorso {
+    0%, 100% {
+        transform: scale(.0);
+    }
+    50% {
+        transform: scale(1)
+    }
+}
+
+#timeline .lines {
+    width: 0;
+    border-left: 5px solid rgb(142, 238, 234);
+    height: 32.5px;
+    margin: 0 0 0 25px;
+}
+
+#timeline .lines.in-progress {
+    border-left: 5px solid #ddd;
 }
 
 .ok, .wait, .failed {
@@ -76,7 +159,8 @@ footer p {
 }
 
 .failed {
-    background: rgb(252, 105, 170);
+    background: #e42d39;
+    color: #fff;
 }
 
 #ultimi {
