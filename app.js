@@ -8,6 +8,8 @@ var child_process = require('child_process')
 var indexRouter = require('./routes/index');
 var totemRouter = require('./routes/totem');
 var gestioneRouter = require('./routes/gestione');
+var qrRouter = require('./routes/qr')
+var slideshow = require('./routes/slideshow')
 
 
 var app = express();
@@ -47,5 +49,7 @@ try {
 app.use('/', indexRouter);
 app.use('/totem', totemRouter);
 app.use('/gestione', gestioneRouter);
+app.use('/qr', qrRouter);
+app.use('/slideshow', slideshow);
 
 module.exports = app;

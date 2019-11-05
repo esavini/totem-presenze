@@ -3,6 +3,7 @@
     <head>
         <link type="text/css" rel="stylesheet" href="css/totem.css"/>
         <meta charset="utf-8">
+        <script type="text/javascript" src="js/qr.js"></script>
         <script type="text/javascript" src="js/totem.js"></script>
     </head>
     <body>
@@ -30,7 +31,8 @@
                                 <div class="lines in-progress" id="lineaIndicatore"></div>
                             </div>
                             <div style="display: table-cell">
-                                <p><img src="images/clock.svg" alt style=" height: 35px;margin-right: 5px" /><span id="durata"></span></p>
+                                <p><img src="images/clock.svg" alt style=" height: 35px;margin-right: 5px"/><span
+                                        id="durata"></span></p>
                             </div>
                         </div>
                         <div style="display: table">
@@ -43,10 +45,17 @@
                             </div>
                         </div>
                     </div>
+                    <div id="qr" class="nascondi-qr">
+                        <div id="qr-container"></div>
+                        <div class="ok" id="qr-info" style="margin-top: 20px;">
+                            o inquadra il qr
+                        </div>
+                    </div>
+
                 </header>
                 <aside>
                     <div id="titolo">
-                        <h1 id="ora">00:00:00</h1>
+                        <h1 id="ora">--:--:--</h1>
                         <h2>Ultime rilevazioni</h2>
                     </div>
                     <div id="ultimi"></div>
@@ -56,9 +65,17 @@
                 <marquee id="marquee">
                     Avvicina il badge al lettore per iniziare o terminare la presenza.
                 </marquee>
-                <p><b>FabLab Romagna A.P.S.</b></p>
+                <p><b>FabLab Romagna</b></p>
                 <p>Realizzato da Edoardo Savini</p>
             </footer>
+        </div>
+        <div id="slideshow">
+            <iframe src="" id="wv-slideshow"></iframe>
+            <div id="infocontainer">
+                <div>
+                    Avvicina il badge al lettore <span id="slide-qr-info">o inquadra il QR a destra</span>
+                </div>
+            </div>
         </div>
     </body>
 </html>

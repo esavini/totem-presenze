@@ -17,6 +17,7 @@ body {
 header, aside {
     display: table-cell;
     vertical-align: top;
+    overflow: hidden;
 }
 
 footer {
@@ -138,6 +139,7 @@ header > #timeline * {
     border-radius: 5px;
     font-weight: bold;
     margin-top: 25px;
+    text-transform: uppercase;
 }
 
 #marquee {
@@ -192,4 +194,100 @@ footer p {
 
 .box div:last-child p:first-child {
     font-weight: bold;
+}
+
+#qr {
+    width: 25vh;
+    height: 25vh;
+    margin: 10vh auto 0 auto;
+    text-align: center;
+}
+
+.nascondi-qr {
+    visibility: hidden;
+}
+
+.nascondi-qr * {
+    visibility: hidden !important;
+}
+
+#qr-container {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#slideshow {
+    z-index: 2000;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: none;
+}
+
+#slideshow iframe {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #fff;
+}
+
+#slideshow #infocontainer {
+    width: calc(100% - 2vw);
+    position: fixed;
+    z-index: 2001;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 1vw;
+}
+
+#slideshow #infocontainer > div {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+#slideshow #infocontainer > div:first-child {
+    width: 50vw;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: #fff;
+    padding: 1vw;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.qr-slide {
+    height: 20vh !important;
+    width: 20vh !important;
+    background: #fff;
+    bottom: 1vw;
+    right: 1vw;
+    padding: 1vw;
+    position: absolute;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    z-index: 2001;
+}
+
+.qr-slide > div:first-child {
+    height: 100%;
+    width: 100%;
+}
+
+.qr-slide #qr-container img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.qr-slide #qr-info {
+    display: none;
 }

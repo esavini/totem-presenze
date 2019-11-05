@@ -3,9 +3,10 @@ window.addEventListener('load', function () {
 
     setInterval(function () {
         orologio.innerText = new Date().toLocaleTimeString()
-    }, 250)
+    }, 500)
 
     const N_MAX_RILEVAZIONI_ELENCO = 10
+    const TIMEOUT_SCREENSAVER = 300000 // 5 minuti
 
     var rilevazioni = []
 
@@ -26,6 +27,22 @@ window.addEventListener('load', function () {
     var lineaIndicatore = document.getElementById('lineaIndicatore')
     var pallinoFine = document.getElementById('pallinoFine')
     var timeline = document.getElementById('timeline')
+    var qrContainer = document.getElementById('qr-container')
+    var qrParent = document.getElementById('qr')
+    var qrInfo = document.getElementById('qr-info')
+    var slideContainer = document.getElementById('slideshow')
+    var slideQrInfo = document.getElementById('slide-qr-info')
+    var slideshow = document.getElementById('wv-slideshow')
+    var txtSlideShowQr = document.getElementById('slide-qr-info')
+
+    var qrcode = new QRCode(qrContainer, {
+        text: 'NON DISPONIBILE',
+        width: qrContainer.clientWidth,
+        height: qrContainer.clientHeight,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.L
+    })
 
     var inizioConteggio = null
 
@@ -35,12 +52,17 @@ window.addEventListener('load', function () {
             codice += e.key
 
         else {
-            elabora(codice)
+
+            if(codice.match(/^[0-9]{10}$/))
+                elabora(codice)
+
             codice = ''
         }
     })
 
     var to = null
+    var last = Date.now()
+    var slide_last = null
 
     function elabora (codice) {
 
@@ -54,11 +76,17 @@ window.addEventListener('load', function () {
             to = null
         }
 
+        last = Date.now()
+
         inizioConteggio = null
+
+        if(slide_last !== null)
+            chiudi_slideshow()
 
         ripristinaInterfaccia()
         badge.innerText = codice
         result.innerHTML = '<span class="wait">ATTENDI</span>'
+        qrParent.classList.add('nascondi-qr')
 
         rilevazioni.unshift({
             nome: '',
@@ -73,6 +101,7 @@ window.addEventListener('load', function () {
             disegna()
 
             invioInCorso = false
+            last = Date.now()
 
             to = setTimeout(ripristinaInterfaccia, 15000)
         })
@@ -141,6 +170,8 @@ window.addEventListener('load', function () {
 
         xhr.onreadystatechange = function () {
 
+            last = Date.now()
+
             if (xhr.status === 200 && xhr.readyState === XMLHttpRequest.DONE) {
 
                 var json = JSON.parse(xhr.responseText)
@@ -201,7 +232,7 @@ window.addEventListener('load', function () {
 
         nome.innerText = ''
         badge.innerText = ''
-        result.innerHTML = '<span class="ok">AVVICINA IL BADGE AL LETTORE</span>'
+        result.innerHTML = '<span class="ok">avvicina il badge al lettore</span>'
 
         timeline.style.display = 'none'
         oraInizio.innerText = ''
@@ -215,6 +246,9 @@ window.addEventListener('load', function () {
 
         if (!lineaIndicatore.classList.contains('in-progress'))
             lineaIndicatore.classList.add('in-progress')
+
+
+        qrParent.classList.remove('nascondi-qr')
     }
 
     function avvioTotem () {
@@ -253,10 +287,95 @@ window.addEventListener('load', function () {
                 result.innerHTML = '<span class="failed">DISCONNESSO</span>'
             }
         }
-
     }
 
+    function richiedi_qr () {
+        qrcode.clear()
+
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', '/qr', true)
+        xhr.send()
+
+        xhr.onreadystatechange = function () {
+
+            if (xhr.status === 200 && xhr.readyState === XMLHttpRequest.DONE) {
+
+                var json = JSON.parse(xhr.responseText)
+
+                if (json.code !== null) {
+                    qrContainer.style.visibility = 'visible'
+                    qrInfo.style.visibility = 'visible'
+                    txtSlideShowQr.style.display = 'inline'
+
+                    qrcode.clear()
+                    qrcode.makeCode(json.code)
+                } else {
+                    qrContainer.style.visibility = 'hidden'
+                    qrInfo.style.visibility = 'hidden'
+                    txtSlideShowQr.style.display = 'none'
+                }
+
+            } else if (xhr.readyState === XMLHttpRequest.DONE) {
+                qrParent.style.visibility = 'hidden'
+                qrSlideContainer.style.visibility = 'hidden'
+            }
+        }
+    }
+
+    function avvia_slideshow() {
+        if(last + TIMEOUT_SCREENSAVER > Date.now() || invioInCorso)
+            return
+
+        if(slide_last !== null)
+            return
+
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', '/slideshow', true)
+        xhr.send()
+
+        slide_last = Date.now()
+
+        xhr.onreadystatechange = function () {
+
+            if (xhr.status === 200 && xhr.readyState === XMLHttpRequest.DONE) {
+
+                slide_last = Date.now()
+
+                var json = JSON.parse(xhr.responseText)
+
+                if (json.slideshow !== null) {
+                    slide_last = Date.now()
+
+                    slideshow.src = json.slideshow
+
+                    slideContainer.style.display = 'block'
+
+                    qrParent.classList.add('qr-slide')
+
+                    setTimeout(function() {
+                        chiudi_slideshow()
+                    }, TIMEOUT_SCREENSAVER)
+                } else {
+                    chiudi_slideshow()
+                }
+
+            } else if (xhr.readyState === XMLHttpRequest.DONE) {
+                chiudi_slideshow()
+            }
+        }
+    }
+
+    function chiudi_slideshow() {
+        slideContainer.style.display = 'none'
+        slide_last = null
+        last = Date.now()
+        qrParent.classList.remove('qr-slide')
+    }
+
+    richiedi_qr()
     avvioTotem()
     setInterval(avvioTotem, 2000)
     setInterval(conteggio, 500)
+    setInterval(richiedi_qr, 5000)
+    setInterval(avvia_slideshow, 1000)
 })

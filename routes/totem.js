@@ -26,8 +26,8 @@ router.post('/check', function (req_server, res_server, next_server) {
             , rfid: req_server.body.badge
             , timestamp: parseInt('' + (req_server.body.ora / 1000))
         }
-        ,headers: {
-            'User-Agent': 'RILEVATORE-2019-02-13'
+        , headers: {
+            'User-Agent': 'RILEVATORE-2019-10-26'
         }
     }, (err, res, body) => {
 
@@ -85,9 +85,8 @@ router.get('/config', function (req_server, res_server, next_server) {
     response.enabled = totem.enabled
     response.marquee = totem.marquee
 
-    if(last_check === null || (Date.now() - last_check) > 1000 * 60 * 5) {
-        request.post('http://clients1.google.com/generate_204', {
-        }, (err, res, body) => {
+    if (last_check === null || (Date.now() - last_check) > 1000 * 60 * 5) {
+        request.post('http://clients1.google.com/generate_204', {}, (err, res, body) => {
 
             if (err) {
                 response.enabled = false
