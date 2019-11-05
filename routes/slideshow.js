@@ -4,7 +4,7 @@ var fs = require('fs')
 var router = express.Router()
 
 /* GET users listing. */
-router.get('/', function (req_server, res_server, next_server) {
+router.get('/', function (req_server, res_server,next_server) {
 
     var totem = JSON.parse(fs.readFileSync(__dirname + '/../config.json'))
 
