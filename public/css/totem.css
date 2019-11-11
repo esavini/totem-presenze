@@ -235,6 +235,7 @@ footer p {
     height: 100%;
     overflow: hidden;
     background: #fff;
+    border: 0;
 }
 
 #slideshow #infocontainer {
